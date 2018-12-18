@@ -3,7 +3,7 @@ package uk.co.samwho.modopticon.listeners;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import uk.co.samwho.modopticon.storage.Storage;
 import uk.co.samwho.modopticon.storage.Users;
@@ -31,7 +31,7 @@ public class SwearWordTracker extends ListenerAdapter {
     }
 
     @Override
-    public void onMessageReceived(MessageReceivedEvent event) {
-        wordListTracker.pushEvent(event);
+    public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
+        wordListTracker.pushEvent(event.getMessage());
     }
 }

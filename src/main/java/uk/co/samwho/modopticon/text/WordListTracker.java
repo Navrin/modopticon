@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.flogger.FluentLogger;
 
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import uk.co.samwho.modopticon.util.EventTracker;
@@ -137,7 +138,7 @@ public final class WordListTracker {
                 .build();
     }
 
-    public void pushEvent(MessageReceivedEvent event) {
+    public void pushEvent(Message event) {
         EventTracker tracker;
         try {
             tracker = cache.get(
@@ -146,8 +147,8 @@ public final class WordListTracker {
             throw new RuntimeException(e);
         }
 
-        int numMatches = wordList.numMatches(event.getMessage().getContentRaw());
-        Instant time = event.getMessage().getCreationTime().toInstant();
+        int numMatches = wordList.numMatches(event.getContentRaw());
+        Instant time = event.getCreationTime().toInstant();
         tracker.inc(numMatches, time);
 
         logger.atFine().log("added %d to counter for %s at %s", numMatches, event.getAuthor().getName(), time);

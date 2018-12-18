@@ -3,17 +3,22 @@ package uk.co.samwho.modopticon.storage;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.channel.text.GenericTextChannelEvent;
 import net.dv8tion.jda.core.events.message.GenericMessageEvent;
+import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 
 public final class Channels {
-  public static Long id(MessageChannel channel) {
+  public static long id(MessageChannel channel) {
     return channel.getIdLong();
   }
 
-  public static Long id(GenericTextChannelEvent event) {
+  public static long id(GenericTextChannelEvent event) {
     return id(event.getChannel());
   }
 
-  public static Long id(GenericMessageEvent event) {
+  public static long id(GenericMessageEvent event) {
+    return id(event.getChannel());
+  }
+
+  public static long id(GenericGuildMessageEvent event) {
     return id(event.getChannel());
   }
 }
