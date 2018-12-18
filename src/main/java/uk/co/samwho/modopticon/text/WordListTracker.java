@@ -9,7 +9,6 @@ import com.google.common.flogger.FluentLogger;
 
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import uk.co.samwho.modopticon.util.EventTracker;
 import uk.co.samwho.modopticon.text.WordList;
 
@@ -38,7 +37,7 @@ import java.util.function.Consumer;
  *     .build();
  * </pre>
  */
-public final class WordListTracker extends ListenerAdapter {
+public final class WordListTracker {
     private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
     private final WordList wordList;
@@ -138,8 +137,7 @@ public final class WordListTracker extends ListenerAdapter {
                 .build();
     }
 
-    @Override
-    public void onMessageReceived(MessageReceivedEvent event) {
+    public void pushEvent(MessageReceivedEvent event) {
         EventTracker tracker;
         try {
             tracker = cache.get(

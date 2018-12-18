@@ -1,6 +1,5 @@
 package uk.co.samwho.modopticon.listeners;
 
-import com.google.common.flogger.FluentLogger;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
@@ -8,14 +7,13 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import uk.co.samwho.modopticon.storage.Storage;
 import uk.co.samwho.modopticon.text.WordList;
+import uk.co.samwho.modopticon.text.WordListTracker;
 
 import java.time.Duration;
 import java.util.stream.Stream;
 
 @Singleton
 public class SwearWordTracker extends ListenerAdapter {
-    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
-
     private final WordListTracker wordListTracker;
 
     @Inject
@@ -31,6 +29,6 @@ public class SwearWordTracker extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        wordListTracker.onMessageReceived(event);
+        wordListTracker.pushEvent(event);
     }
 }
