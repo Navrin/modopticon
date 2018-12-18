@@ -15,37 +15,27 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 public final class Guild {
   private final Long id;
   private final Map<Long, Channel> channels;
+  private final Map<Long, Member> members;
 
   Guild(Long id) {
     this.id = id;
     this.channels = Collections.synchronizedMap(new HashMap<>());
-  }
-
-  Channel getOrCreateChannel(Long id) {
-    return channels.computeIfAbsent(id, k -> new Channel(id));
-  }
-
-  Channel getOrCreateChannel(MessageChannel channel) {
-    return getOrCreateChannel(channel.getIdLong());
-  }
-
-  Channel getOrCreateChannel(net.dv8tion.jda.core.entities.Channel channel) {
-    return getOrCreateChannel(channel.getIdLong());
+    this.members = Collections.synchronizedMap(new HashMap<>());
   }
 
   public Channel channel(Long id) {
-    return getOrCreateChannel(id);
-  }
-
-  public Channel channel(Message message) {
-    return getOrCreateChannel(message.getChannel());
-  }
-
-  public Channel channel(MessageReceivedEvent event) {
-    return getOrCreateChannel(event.getChannel());
+    return channels.computeIfAbsent(id, k -> new Channel(id));
   }
 
   public Collection<Channel> channels() {
     return channels.values();
+  }
+
+  public Member member(Long id) {
+    return members.computeIfAbsent(id, k -> new Member(id));
+  }
+
+  public Collection<Member> members() {
+    return members.values();
   }
 }

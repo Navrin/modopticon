@@ -36,7 +36,7 @@ public final class Backfiller implements Runnable {
         }
 
         logger.atInfo().log("backfilling channel #%s in guild %s", channel.getName(), guild.getName());
-        channel.getIterableHistory().limit(50).stream().limit(50).forEach(message -> {
+        channel.getIterableHistory().limit(50).cache(false).stream().limit(50).forEach(message -> {
           MessageReceivedEvent event = new MessageReceivedEvent(jda, -1, message);
           listeners.forEach(l -> l.onMessageReceived(event));
         });

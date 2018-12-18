@@ -7,11 +7,11 @@ import java.util.Map;
 import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
-public final class User {
+public final class Member {
   private final Long id;
   private final Map<String, Object> attributes;
 
-  User(Long id) {
+  Member(Long id) {
     this.id = id;
     this.attributes = Collections.synchronizedMap(new HashMap<>());
   }

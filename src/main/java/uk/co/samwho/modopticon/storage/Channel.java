@@ -16,19 +16,7 @@ public final class Channel {
     this.attributes = Collections.synchronizedMap(new HashMap<>());
   }
 
-  public Long getId() {
-    return this.id;
-  }
-
-  public Map<String, Object> getAttributes() {
-    return Collections.unmodifiableMap(this.attributes);
-  }
-
-  public Object getAttribute(String key) {
-    return this.attributes.get(key);
-  }
-
-  public Object setAttribute(String key, Object value) {
-    return this.attributes.put(key, value);
+  public Map<String, Object> attributes() {
+    return this.attributes;
   }
 }

@@ -8,6 +8,8 @@ import com.google.inject.Singleton;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import uk.co.samwho.modopticon.storage.Channel;
+import uk.co.samwho.modopticon.storage.Channels;
+import uk.co.samwho.modopticon.storage.Guilds;
 import uk.co.samwho.modopticon.storage.Storage;
 
 @Singleton
@@ -23,13 +25,13 @@ public final class LastMessageListener extends ListenerAdapter {
 
   @Override
   public void onMessageReceived(MessageReceivedEvent event) {
-    Channel channel = storage.channel(event);
+    Channel channel = storage.guild(Guilds.id(event)).channel(Channels.id(event));
 
     OffsetDateTime curr = event.getMessage().getCreationTime();
-    OffsetDateTime prev = (OffsetDateTime)channel.getAttribute(KEY);
+    OffsetDateTime prev = (OffsetDateTime)channel.attributes().get(KEY);
 
     if (prev == null || curr.isAfter(prev)) {
-      channel.setAttribute(KEY, curr);
+      channel.attributes().put(KEY, curr);
     }
   }
 }
