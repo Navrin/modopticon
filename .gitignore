@@ -1,0 +1,8 @@
+.idea/
+target/
+src/main/resources/token.txt
+.settings/
+.factorypath
+.classpath
+.project
+.vscode
