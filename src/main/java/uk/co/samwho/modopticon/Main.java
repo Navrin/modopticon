@@ -9,6 +9,7 @@ import net.dv8tion.jda.core.JDA;
 import uk.co.samwho.modopticon.annotations.Init;
 import uk.co.samwho.modopticon.guice.ClockModule;
 import uk.co.samwho.modopticon.guice.ConfigModule;
+import uk.co.samwho.modopticon.guice.GsonModule;
 import uk.co.samwho.modopticon.guice.JDAModule;
 import uk.co.samwho.modopticon.guice.ListenerModule;
 
@@ -19,6 +20,7 @@ public class Main {
 
     private Main() {
         injector = Guice.createInjector(
+            new GsonModule(),
             new ClockModule(),
             new ConfigModule(),
             new ListenerModule(),
@@ -33,6 +35,7 @@ public class Main {
         }
 
         injector.getInstance(JDA.class);
+        injector.getInstance(JSONServer.class).run();
     }
 
     public static void main(String... args) throws Exception {
