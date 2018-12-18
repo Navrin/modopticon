@@ -35,6 +35,7 @@ public class Main {
         }
 
         injector.getInstance(JDA.class);
+        injector.getInstance(Backfiller.class).run();
         injector.getInstance(JSONServer.class).run();
     }
 

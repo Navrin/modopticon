@@ -1,4 +1,4 @@
-package uk.co.samwho.modopticon.listeners;
+package uk.co.samwho.modopticon.text;
 
 import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;

@@ -16,9 +16,8 @@ import java.util.stream.Stream;
 public final class ConfigModule extends AbstractModule {
     @Override
     public void configure() {
-        Multibinder<@Init Runnable> inits = Multibinder.newSetBinder(binder(),
-                Key.get(new TypeLiteral<@Init Runnable>() {
-                }));
+        Multibinder<@Init Runnable> inits =
+            Multibinder.newSetBinder(binder(), Key.get(new TypeLiteral<@Init Runnable>() {}));
         inits.addBinding().to(ConfigureLogging.class);
     }
 
