@@ -9,6 +9,11 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import com.google.inject.Singleton;
 
+/**
+ * This object is intended to be shared globally and modified by ListenerAdapters.
+ * Its purpose is to represents Discord entities (guilds, users, members, etc.) and
+ * attach metadata to them to be shown in some UI.
+ */
 @ThreadSafe
 @Singleton
 public final class Storage {
