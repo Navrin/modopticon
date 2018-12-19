@@ -28,6 +28,7 @@ public final class JSONServer implements Runnable {
     port(8080);
 
     get("/", (req, res) -> {
+      res.header("Content-Type", "application/json");
       return gson.toJson(storage);
     });
   }
