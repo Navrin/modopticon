@@ -10,5 +10,6 @@ in a file in `src/main/resources/token.txt`. Once you've got a token and put it 
 right place, you can run the project like so:
 
 ```
-$ mvn clean compile install; and java -jar target/modopticon-1.0-SNAPSHOT-jar-with-dependencies.jar
+$ mvn clean compile install
+$ java -jar target/modopticon-1.0-SNAPSHOT-jar-with-dependencies.jar
 ```
