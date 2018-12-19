@@ -29,7 +29,11 @@ public final class Users {
   }
 
   public static boolean isDeleted(Member member) {
-    return member == null || member.getUser() == null;
+    return member == null || isDeleted(member.getUser());
+  }
+
+  public static boolean isDeleted(User user) {
+    return user == null;
   }
 
   public static boolean isDeleted(GenericGuildMemberEvent event) {
