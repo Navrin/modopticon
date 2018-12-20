@@ -1,5 +1,8 @@
 package uk.co.samwho.modopticon.api.v1.websocket;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 import com.google.gson.annotations.Expose;
 
 import uk.co.samwho.modopticon.storage.Entity;
@@ -21,8 +24,12 @@ public final class Message {
     return new Message(Type.ERROR, message);
   }
 
+  public static Message subscriptions(Collection<Entity> entities) {
+    return new Message(Type.SUBSCRIPTIONS, entities.stream().map(Entity::id).collect(Collectors.toList()));
+  }
+
   public enum Type {
-    SUBSCRIBED, UNSUBSCRIBED, ENTITY_UPDATE, ERROR
+    SUBSCRIBED, UNSUBSCRIBED, ENTITY_UPDATE, ERROR, SUBSCRIPTIONS
   }
 
   @Expose private final Type type;

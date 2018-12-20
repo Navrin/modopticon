@@ -21,7 +21,7 @@ public final class EntityObserver implements Observer, Closeable {
 
   private final Gson gson;
   private final Session session;
-  private final Set<Observable> observing;
+  private final Set<Entity> observing;
 
   EntityObserver(Gson gson, Session session) {
     this.gson = gson;
@@ -44,14 +44,18 @@ public final class EntityObserver implements Observer, Closeable {
     }
   }
 
-  public synchronized void observe(Observable o) {
+  public synchronized void observe(Entity o) {
     o.addObserver(this);
     observing.add(o);
   }
 
-  public synchronized void stopObserving(Observable o) {
+  public synchronized void stopObserving(Entity o) {
     o.deleteObserver(this);
     observing.remove(o);
+  }
+
+  public Set<Entity> observing() {
+    return Collections.unmodifiableSet(this.observing);
   }
 
   @Override

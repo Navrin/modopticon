@@ -16,7 +16,7 @@ public final class StorageTest {
     assertThat(storage.guild(1)).isNotNull();
     assertThat(storage.guild(1)).isEqualTo(storage.guild(1));
     assertThat(storage.guild(1)).isNotEqualTo(storage.guild(2));
-    assertThat(storage.guild(1).resourceIdentifier()).isEqualTo("/guilds/1");
+    assertThat(storage.guild(1).id()).isEqualTo("/guilds/1");
     assertThat(storage.guildExists(1)).isTrue();
 
     assertThat(storage.guild(1)).isEqualTo(storage.fromResourceIdentifier("/guilds/1").get());
@@ -28,7 +28,7 @@ public final class StorageTest {
     assertThat(storage.user(1)).isNotNull();
     assertThat(storage.user(1)).isEqualTo(storage.user(1));
     assertThat(storage.user(1)).isNotEqualTo(storage.user(2));
-    assertThat(storage.user(1).resourceIdentifier()).isEqualTo("/users/1");
+    assertThat(storage.user(1).id()).isEqualTo("/users/1");
     assertThat(storage.userExists(1)).isTrue();
 
     assertThat(storage.user(1)).isEqualTo(storage.fromResourceIdentifier("/users/1").get());
@@ -40,7 +40,7 @@ public final class StorageTest {
     assertThat(storage.guild(1).member(2)).isNotNull();
     assertThat(storage.guild(1).member(2)).isEqualTo(storage.guild(1).member(2));
     assertThat(storage.guild(1).member(2)).isNotEqualTo(storage.guild(1).member(3));
-    assertThat(storage.guild(1).member(2).resourceIdentifier()).isEqualTo("/guilds/1/members/2");
+    assertThat(storage.guild(1).member(2).id()).isEqualTo("/guilds/1/members/2");
     assertThat(storage.guild(1).memberExists(2)).isTrue();
 
     assertThat(storage.guild(1).member(2)).isEqualTo(storage.fromResourceIdentifier("/guilds/1/members/2").get());
@@ -52,7 +52,7 @@ public final class StorageTest {
     assertThat(storage.guild(1).channel(3)).isNotNull();
     assertThat(storage.guild(1).channel(3)).isEqualTo(storage.guild(1).channel(3));
     assertThat(storage.guild(1).channel(3)).isNotEqualTo(storage.guild(1).channel(4));
-    assertThat(storage.guild(1).channel(3).resourceIdentifier()).isEqualTo("/guilds/1/channels/3");
+    assertThat(storage.guild(1).channel(3).id()).isEqualTo("/guilds/1/channels/3");
     assertThat(storage.guild(1).channelExists(3)).isTrue();
 
     assertThat(storage.guild(1).channel(3)).isEqualTo(storage.fromResourceIdentifier("/guilds/1/channels/3").get());

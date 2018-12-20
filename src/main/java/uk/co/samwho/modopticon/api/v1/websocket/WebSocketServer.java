@@ -100,8 +100,15 @@ public final class WebSocketServer {
     case "unsubscribe":
       unsubscribe(session, parts.get(1));
       break;
+    case "subscriptions":
+      if (parts.size() > 1) {
+        send(session, Message.error("subscriptons command takes no args"));
+        break;
+      }
+      subscriptions(session);
+      break;
     default:
-      session.getRemote().sendString(gson.toJson(Message.error("unknwon command: " + parts.get(0))));
+      send(session, Message.error("unknwon command: " + parts.get(0)));
       break;
     }
   }
@@ -111,7 +118,7 @@ public final class WebSocketServer {
     try {
       entity = storage.fromResourceIdentifier(resourceIdentifier);
     } catch (Exception e) {
-      session.getRemote().sendString(gson.toJson(Message.error(e.getMessage())));
+      send(session, Message.error(e.getMessage()));
       return;
     }
 
@@ -131,7 +138,7 @@ public final class WebSocketServer {
     try {
       entity = storage.fromResourceIdentifier(resourceIdentifier);
     } catch (Exception e) {
-      session.getRemote().sendString(gson.toJson(Message.error(e.getMessage())));
+      send(session, Message.error(e.getMessage()));
       return;
     }
 
@@ -144,6 +151,14 @@ public final class WebSocketServer {
     eo.stopObserving(entity.get());
 
     send(session, Message.unsubscribed(entity.get()));
+  }
+
+  private void subscriptions(Session session) throws IOException {
+    if (!session.isOpen()) {
+      return;
+    }
+
+    send(session, Message.subscriptions(observers.get(session).observing()));
   }
 
   private void send(Session session, Message message) throws IOException {

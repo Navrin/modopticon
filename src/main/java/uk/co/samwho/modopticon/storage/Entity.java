@@ -16,12 +16,12 @@ public abstract class Entity extends Observable {
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
   @Expose private final String type;
-  @Expose private final String resourceIdentifier;
+  @Expose private final String id;
   @Expose private final ObservableMap<String, Object> attributes;
 
-  protected Entity(String type, String resourceIdentifier) {
+  protected Entity(String type, String id) {
     this.type = type;
-    this.resourceIdentifier = resourceIdentifier;
+    this.id = id;
     this.attributes = ObservableMap.wrap(new ConcurrentHashMap<>());
     this.attributes.addObserver((observable, arg) -> {
       logger.atFine().log("notifying observers of %s with arg %s", this, arg);
@@ -30,8 +30,8 @@ public abstract class Entity extends Observable {
     });
   }
 
-  public final String resourceIdentifier() {
-    return this.resourceIdentifier;
+  public final String id() {
+    return this.id;
   }
 
   public final Map<String, Object> attributes() {
