@@ -48,7 +48,7 @@ public final class NicknameListener extends ListenerAdapter {
   }
 
   private void processMember(Member member) {
-    if (Users.isDeleted(member)) {
+    if (Users.isDeleted(member) || member.getNickname() == null) {
       return;
     }
 
@@ -62,7 +62,7 @@ public final class NicknameListener extends ListenerAdapter {
   }
 
   private void processUser(User user) {
-    if (Users.isDeleted(user)) {
+    if (Users.isDeleted(user) || user.getName() == null) {
       return;
     }
 

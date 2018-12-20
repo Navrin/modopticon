@@ -9,7 +9,6 @@ import com.google.common.flogger.FluentLogger;
 
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import uk.co.samwho.modopticon.util.EventTracker;
 import uk.co.samwho.modopticon.text.WordList;
 
@@ -24,18 +23,17 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
- * A ListenerAdapter that tracks how often users say words in a given word list and fires callbacks when they say more
- * than a given number of times in a given amount of time.
+ * A ListenerAdapter that tracks how often users say words in a given word list
+ * and fires callbacks when they say more than a given number of times in a
+ * given amount of time.
  * <p>
- * <p>Example:
  * <p>
+ * Example:
+ * <p>
+ *
  * <pre>
- *   WordListTracker.builder()
- *     .wordList(WordList.from(Stream.of("foo")))
- *     .duration(Duration.ofSeconds(60))
- *     .threshold(5)
- *     .addCallback((user) -> System.out.println(user.getName() + " is saying foo a lot!"))
- *     .build();
+ * WordListTracker.builder().wordList(WordList.from(Stream.of("foo"))).duration(Duration.ofSeconds(60)).threshold(5)
+ *         .addCallback((user) -> System.out.println(user.getName() + " is saying foo a lot!")).build();
  * </pre>
  */
 public final class WordListTracker {
@@ -95,30 +93,21 @@ public final class WordListTracker {
             Preconditions.checkNotNull(wordList, "you must supply a wordList");
             Preconditions.checkNotNull(duration, "you must supply a duration");
             Preconditions.checkArgument(threshold > 0, "you must supply a non-zero threshold");
-            Preconditions.checkArgument(!overThresholdCallbacks.isEmpty(), "you must supply at least one callback for going over the threshold");
+            Preconditions.checkArgument(!overThresholdCallbacks.isEmpty(),
+                    "you must supply at least one callback for going over the threshold");
 
             if (clock == null) {
                 clock = Clock.systemDefaultZone();
             }
 
-            return new WordListTracker(
-                wordList,
-                duration,
-                threshold,
-                clock,
-                Collections.unmodifiableCollection(overThresholdCallbacks),
-                Collections.unmodifiableCollection(underThresholdCallbacks));
+            return new WordListTracker(wordList, duration, threshold, clock,
+                    Collections.unmodifiableCollection(overThresholdCallbacks),
+                    Collections.unmodifiableCollection(underThresholdCallbacks));
         }
     }
 
-    private WordListTracker(
-        WordList wordList,
-        Duration duration,
-        int threshold,
-        Clock clock,
-        Collection<Consumer<User>> overThresholdCallbacks,
-        Collection<Consumer<User>> underThresholdCallbacks
-    ) {
+    private WordListTracker(WordList wordList, Duration duration, int threshold, Clock clock,
+            Collection<Consumer<User>> overThresholdCallbacks, Collection<Consumer<User>> underThresholdCallbacks) {
         this.wordList = wordList;
         this.duration = duration;
         this.threshold = threshold;
@@ -126,23 +115,22 @@ public final class WordListTracker {
         this.overThresholdCallbacks = overThresholdCallbacks;
         this.underThresholdCallbacks = underThresholdCallbacks;
 
-        this.cache = CacheBuilder.newBuilder()
-                .expireAfterAccess(duration.getSeconds(), TimeUnit.SECONDS)
+        this.cache = CacheBuilder.newBuilder().expireAfterAccess(duration.getSeconds(), TimeUnit.SECONDS)
                 .removalListener((info) -> {
                     logger.atFine().log("removed key %s (cause: %s)", info.getKey(), info.getCause());
 
-                    // Not sure what the guarantees are on this being called, but it should mean in all
+                    // Not sure what the guarantees are on this being called, but it should mean in
+                    // all
                     // cases that a user hasn't said anything on the list in a while.
-                    underThresholdCallbacks.forEach(callback -> callback.accept((User)info.getKey()));
-                })
-                .build();
+                    underThresholdCallbacks.forEach(callback -> callback.accept((User) info.getKey()));
+                }).build();
     }
 
     public void pushEvent(Message event) {
         EventTracker tracker;
         try {
-            tracker = cache.get(
-                    event.getAuthor(), () -> EventTracker.builder().clock(clock).duration(duration).build());
+            tracker = cache.get(event.getAuthor(),
+                    () -> EventTracker.builder().clock(clock).duration(duration).build());
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -151,7 +139,9 @@ public final class WordListTracker {
         Instant time = event.getCreationTime().toInstant();
         tracker.inc(numMatches, time);
 
-        logger.atFine().log("added %d to counter for %s at %s", numMatches, event.getAuthor().getName(), time);
+        if (numMatches > 0) {
+            logger.atFine().log("added %d to counter for %s at %s", numMatches, event.getAuthor().getName(), time);
+        }
 
         if (tracker.count() >= threshold) {
             for (Consumer<User> callback : overThresholdCallbacks) {
@@ -165,14 +155,15 @@ public final class WordListTracker {
     }
 
     /**
-     * Returns users that are currently on the radar for this word list. It doesn't necessarily mean that they have
-     * triggered their threshold, just that they've mentioned some of the words in your list recently.
+     * Returns users that are currently on the radar for this word list. It doesn't
+     * necessarily mean that they have triggered their threshold, just that they've
+     * mentioned some of the words in your list recently.
      */
     public Collection<User> currentlyTrackedUsers() {
         Set<User> users = Sets.newHashSet();
         cache.asMap().forEach((user, tracker) -> {
             if (tracker.count() > 0) {
-               users.add(user);
+                users.add(user);
             }
         });
         return users;

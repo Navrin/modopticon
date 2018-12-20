@@ -1,26 +1,12 @@
 package uk.co.samwho.modopticon.storage;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
-public final class User {
-  private final Long id;
-  private final Map<String, Object> attributes;
+public final class User extends Entity {
+  private static final String TYPE = "user";
 
-  User(Long id) {
-    this.id = id;
-    this.attributes = Collections.synchronizedMap(new HashMap<>());
-  }
-
-  public Long getId() {
-    return this.id;
-  }
-
-  public Map<String, Object> attributes() {
-    return this.attributes;
+  User(long id) {
+    super(TYPE, String.format("/users/%d", id));
   }
 }

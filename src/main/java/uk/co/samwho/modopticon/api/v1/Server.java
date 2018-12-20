@@ -7,6 +7,7 @@ import javax.inject.Singleton;
 
 import com.google.gson.Gson;
 
+import uk.co.samwho.modopticon.api.v1.websocket.WebSocketServer;
 import uk.co.samwho.modopticon.storage.Guild;
 import uk.co.samwho.modopticon.storage.Storage;
 
@@ -14,11 +15,13 @@ import uk.co.samwho.modopticon.storage.Storage;
 public final class Server implements Runnable {
   private final Storage storage;
   private final Gson gson;
+  private final WebSocketServer webSocketServer;
 
   @Inject
-  public Server(Storage storage, Gson gson) {
+  public Server(Storage storage, Gson gson, WebSocketServer webSocketServer) {
     this.storage = storage;
     this.gson = gson;
+    this.webSocketServer = webSocketServer;
   }
 
   @Override
@@ -26,6 +29,8 @@ public final class Server implements Runnable {
     initExceptionHandler(e -> {
       throw new RuntimeException(e);
     });
+
+    webSocket("/api/v1/websocket/", webSocketServer);
 
     port(8080);
 

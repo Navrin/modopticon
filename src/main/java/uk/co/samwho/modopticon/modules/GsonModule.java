@@ -9,12 +9,14 @@ import javax.inject.Singleton;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import dagger.Module;
 import dagger.Provides;
+import uk.co.samwho.modopticon.storage.Entity;
 
 @Module
 public final class GsonModule {
@@ -23,6 +25,7 @@ public final class GsonModule {
     static Gson gson() {
       GsonBuilder builder = new GsonBuilder();
       builder.setPrettyPrinting();
+      builder.excludeFieldsWithoutExposeAnnotation();
 
       builder.registerTypeAdapter(OffsetDateTime.class, new JsonSerializer<OffsetDateTime>() {
         @Override
