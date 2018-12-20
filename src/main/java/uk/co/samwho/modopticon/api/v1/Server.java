@@ -33,11 +33,11 @@ public final class Server implements Runnable {
       throw new RuntimeException(e);
     });
 
-    webSocket("/api/v1/websocket/", webSocketServer);
+    webSocket("/api/v1/websocket", webSocketServer);
 
     port(8080);
 
-    path("/api/v1", () -> {
+    path("/api/v1/rest", () -> {
       before("/*", (req, res) -> {
         res.header("Content-Encoding", "gzip");
         res.header("Content-Type", "application/json");
