@@ -57,7 +57,7 @@ public final class Server implements Runnable {
 
       get("/*", (req, res) -> {
         String path = req.pathInfo();
-        String resourceIdentifier = path.substring("/api/v1".length(), path.length());
+        String resourceIdentifier = path.substring("/api/v1/rest".length(), path.length());
 
         Optional<Entity> entity = Optional.empty();
 

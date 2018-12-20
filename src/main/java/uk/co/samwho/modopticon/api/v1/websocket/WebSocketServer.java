@@ -3,6 +3,7 @@ package uk.co.samwho.modopticon.api.v1.websocket;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,7 @@ import uk.co.samwho.modopticon.storage.Storage;
 @ThreadSafe
 public final class WebSocketServer {
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+  private static final Duration SOCKET_IDLE_TIMEOUT = Duration.ofMinutes(15);
   private static final Splitter WHITESPACE_SPLITTER =
       Splitter
         .on(CharMatcher.whitespace())
@@ -56,6 +58,7 @@ public final class WebSocketServer {
 
   @OnWebSocketConnect
   public void connect(Session session) {
+    session.setIdleTimeout(SOCKET_IDLE_TIMEOUT.toMillis());
     observers.put(session, new EntityObserver(gson, session));
   }
 
