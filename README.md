@@ -3,6 +3,99 @@
 **NOTE:** This is still very WIP, but the idea is to create a bot that can help with
 day-to-day moderation tasks in large Discord servers.
 
+## API
+
+The core of what Modopticon exposes at the moment is two APIs: a REST API over HTTP, and
+a WebSockets API.
+
+### REST
+
+Modopticon keeps tracks of four types of entity: Guilds, Users, Channels and Members. The
+following relationships exist:
+
+- A guild has many members.
+- A guild has many channels.
+- A user relates 1:1 with a member, sharing the same numeric ID.
+
+So at the top level you have guilds and users, which you can see if you were
+to request `http://localhost:8080/api/v1/rest/everything`.
+
+Each entity has an "id" field on its JSON, which acts as a resource identifier
+that can be used in the REST and WebSocket APIs, e.g. `/guilds/1/members/2` where
+"1" is the guild ID in Discord and "2" is the member ID in Discord. "2" will also
+be the user ID, so "/users/2" and "/guilds/1/members/2" will refer to the same
+Discord account.
+
+### WebSockets
+
+To build a real-time dashboard that's useful for moderating, Modopticon
+offers a WebSockets API.
+
+```javascript
+ws = new WebSocket("ws://localhost:8080/api/v1/websocket")
+ws.onmessage = function(m) { console.log(m) }
+ws.send("subscribe /guilds/1/members/2")
+ws.send("unsubscribe /guilds/1/members/2")
+ws.send("subscriptions")
+```
+
+The socket will then receive real-time updates on attributes that Modopticon
+changes on that member entity. There are multiple types of message that can be
+received by the WebSocket, and they're all JSON:
+
+#### SUBSCRIBED
+
+Contains a copy of the state of the entity subscribed to under the "content" key.
+
+```json
+{
+  "type": "SUBSCRIBED",
+  "content": {
+    "id": "/guilds/1/channels/2",
+    "attributes": {}
+  }
+}
+```
+
+#### UNSUBSCRIBED
+
+Contains a copy of the state of the entity unsubscribed from under the "content" key.
+
+```json
+{
+  "type": "UNSUBSCRIBED",
+  "content": {
+    "id": "/guilds/1/channels/2",
+    "attributes": {}
+  }
+}
+```
+
+#### ENTITY_CHANGED
+
+Contains a copy of the state of the entity that changed under the "content" key.
+
+```json
+{
+  "type": "ENTITY_CHANGED",
+  "content": {
+    "id": "/guilds/1/channels/2",
+    "attributes": {}
+  }
+}
+```
+
+#### ERROR
+
+Contains an error message under the "content" key.
+
+```json
+{
+  "type": "ERROR",
+  "content": "you did a bad"
+}
+```
+
 ## Build and run
 
 You'll need to supply a bot token before it will work. The token is expected to be found
