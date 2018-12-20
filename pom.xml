@@ -117,11 +117,6 @@
 			<version>3.8.1_448</version>
 		</dependency>
 		<dependency>
-			<groupId>com.google.auto.value</groupId>
-			<artifactId>auto-value-annotations</artifactId>
-			<version>1.6.2</version>
-		</dependency>
-		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>27.0.1-jre</version>
