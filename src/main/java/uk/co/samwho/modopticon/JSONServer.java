@@ -2,9 +2,10 @@ package uk.co.samwho.modopticon;
 
 import static spark.Spark.*;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import com.google.gson.Gson;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import uk.co.samwho.modopticon.storage.Storage;
 

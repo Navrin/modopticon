@@ -2,12 +2,11 @@ package uk.co.samwho.modopticon.listeners;
 
 import java.time.Clock;
 import java.time.OffsetDateTime;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.flogger.FluentLogger;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.audit.AuditLogEntry;

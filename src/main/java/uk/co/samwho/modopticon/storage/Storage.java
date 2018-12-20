@@ -6,8 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.concurrent.ThreadSafe;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-import com.google.inject.Singleton;
 
 /**
  * This object is intended to be shared globally and modified by ListenerAdapters.
@@ -19,6 +20,9 @@ import com.google.inject.Singleton;
 public final class Storage {
   private final Map<Long, Guild> guilds = Collections.synchronizedMap(new HashMap<>());
   private final Map<Long, User> users = Collections.synchronizedMap(new HashMap<>());
+
+  @Inject
+  Storage() {}
 
   public User user(Long id) {
     return users.computeIfAbsent(id, k -> new User(id));

@@ -1,21 +1,15 @@
 package uk.co.samwho.modopticon.listeners;
 
-import java.time.OffsetDateTime;
-import java.util.Map;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberNickChangeEvent;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.user.update.UserUpdateNameEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import uk.co.samwho.modopticon.storage.Channel;
-import uk.co.samwho.modopticon.storage.Channels;
 import uk.co.samwho.modopticon.storage.Guilds;
 import uk.co.samwho.modopticon.storage.Members;
 import uk.co.samwho.modopticon.storage.Storage;

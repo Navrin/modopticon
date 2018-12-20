@@ -1,0 +1,29 @@
+package uk.co.samwho.modopticon;
+
+import java.util.Set;
+
+import javax.inject.Singleton;
+
+import dagger.Component;
+import net.dv8tion.jda.core.JDA;
+import uk.co.samwho.modopticon.annotations.Init;
+import uk.co.samwho.modopticon.modules.ClockModule;
+import uk.co.samwho.modopticon.modules.ConfigModule;
+import uk.co.samwho.modopticon.modules.GsonModule;
+import uk.co.samwho.modopticon.modules.JDAModule;
+import uk.co.samwho.modopticon.modules.ListenerModule;
+
+@Singleton
+@Component(modules = {
+  ClockModule.class,
+  ConfigModule.class,
+  GsonModule.class,
+  JDAModule.class,
+  ListenerModule.class
+})
+interface Modopticon {
+  Backfiller backfiller();
+  JSONServer jsonServer();
+  JDA jda();
+  @Init Set<Runnable> inits();
+}

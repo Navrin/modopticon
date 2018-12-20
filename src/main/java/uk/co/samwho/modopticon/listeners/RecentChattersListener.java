@@ -11,15 +11,14 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import com.google.common.flogger.FluentLogger;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import uk.co.samwho.modopticon.storage.Channels;
 import uk.co.samwho.modopticon.storage.Guilds;
-import uk.co.samwho.modopticon.storage.Members;
 import uk.co.samwho.modopticon.storage.Storage;
 import uk.co.samwho.modopticon.storage.Users;
 

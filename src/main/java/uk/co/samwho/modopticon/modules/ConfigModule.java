@@ -1,8 +1,5 @@
-package uk.co.samwho.modopticon.guice;
+package uk.co.samwho.modopticon.modules;
 
-import com.google.inject.*;
-import com.google.inject.multibindings.Multibinder;
-import com.google.inject.name.Named;
 import uk.co.samwho.modopticon.annotations.Init;
 
 import java.io.BufferedReader;
@@ -13,53 +10,48 @@ import java.util.logging.LogManager;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public final class ConfigModule extends AbstractModule {
-    @Override
-    public void configure() {
-        Multibinder<@Init Runnable> inits =
-            Multibinder.newSetBinder(binder(), Key.get(new TypeLiteral<@Init Runnable>() {}));
-        inits.addBinding().to(ConfigureLogging.class);
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import dagger.Module;
+import dagger.Provides;
+import dagger.multibindings.IntoSet;
+
+@Module
+public final class ConfigModule {
+    @Provides
+    @Singleton
+    @IntoSet
+    @Init
+    static Runnable provideLoggerConfig(@Named("logging.properties") InputStream config) {
+        return () -> {
+            try {
+                LogManager.getLogManager().readConfiguration(config);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        };
     }
 
     @Provides
     @Singleton
     @Named("logging.properties")
-    private InputStream loggingProperties() {
+    static InputStream loggingProperties() {
         return resourceInputStream("logging.properties");
     }
 
     @Provides
     @Singleton
     @Named("token")
-    private String token() {
+    static String token() {
         return resource("token.txt");
     }
 
     @Provides
     @Singleton
     @Named("bad_words")
-    private Stream<String> badWords() {
+    static Stream<String> badWords() {
         return resourceStringStream("bad_words.txt");
-    }
-
-    @Init
-    @Singleton
-    private static class ConfigureLogging implements Runnable {
-        private final InputStream loggingProperties;
-
-        @Inject
-        ConfigureLogging(@Named("logging.properties") InputStream loggingProperties) {
-            this.loggingProperties = loggingProperties;
-        }
-
-        @Override
-        public void run() {
-            try {
-                LogManager.getLogManager().readConfiguration(loggingProperties);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 
     private static String resource(String path) {
