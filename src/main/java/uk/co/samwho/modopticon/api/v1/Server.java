@@ -55,25 +55,94 @@ public final class Server implements Runnable {
         return gson.toJson(storage);
       });
 
-      get("/*", (req, res) -> {
-        String path = req.pathInfo();
-        String resourceIdentifier = path.substring("/api/v1/rest".length(), path.length());
+      get("/users", (req, res) -> {
+        return gson.toJson(storage.users());
+      });
 
-        Optional<Entity> entity = Optional.empty();
+      get("/users/:uid", (req, res) -> {
+        long uid = Long.valueOf(req.params(":uid"));
 
-        try {
-          entity = storage.fromResourceIdentifier(resourceIdentifier);
-        } catch (NumberFormatException e) {
-          halt(400, "{\"error\": \"error parsing resource identifier\"}");
-        } catch (IllegalArgumentException e) {
-          halt(404, "{\"error\": \"invalid resource identifier\"}");
+        if (!storage.userExists(uid)) {
+          halt(404, "{\"error\": \"user not found\"}");
         }
 
-        if (!entity.isPresent()) {
-          halt(404, "{\"error\": \"entity not found\"}");
+        return gson.toJson(storage.user(uid));
+      });
+
+      get("/guilds", (req, res) -> {
+        return gson.toJson(storage.guilds());
+      });
+
+      get("/guilds/:gid", (req, res) -> {
+        long gid = Long.valueOf(req.params(":gid"));
+
+        if (!storage.guildExists(gid)) {
+          halt(404, "{\"error\": \"guild not found\"}");
         }
 
-        return gson.toJson(entity.get());
+        return gson.toJson(storage.guild(gid));
+      });
+
+      get("/guilds/:gid/channels", (req, res) -> {
+        long gid = Long.valueOf(req.params(":gid"));
+
+        if (!storage.guildExists(gid)) {
+          halt(404, "{\"error\": \"guild not found\"}");
+        }
+
+        Guild guild = storage.guild(gid);
+
+        return gson.toJson(guild.channels());
+      });
+
+      get("/guilds/:gid/channels/:cid", (req, res) -> {
+        long gid = Long.valueOf(req.params(":gid"));
+        long cid = Long.valueOf(req.params(":cid"));
+
+        if (!storage.guildExists(gid)) {
+          halt(404, "{\"error\": \"guild not found\"}");
+        }
+
+        Guild guild = storage.guild(gid);
+
+        if (!guild.channelExists(cid)) {
+          halt(404, "{\"error\": \"channel not found\"}");
+        }
+
+        return gson.toJson(guild.channel(cid));
+      });
+
+      get("/guilds/:gid/members", (req, res) -> {
+        long gid = Long.valueOf(req.params(":gid"));
+
+        if (!storage.guildExists(gid)) {
+          halt(404, "{\"error\": \"guild not found\"}");
+        }
+
+        Guild guild = storage.guild(gid);
+
+        return gson.toJson(guild.members());
+      });
+
+      get("/guilds/:gid/members/:mid", (req, res) -> {
+        long gid = Long.valueOf(req.params(":gid"));
+        long mid = Long.valueOf(req.params(":mid"));
+
+        if (!storage.guildExists(gid)) {
+          halt(404, "{\"error\": \"guild not found\"}");
+        }
+
+        Guild guild = storage.guild(gid);
+
+        if (!guild.memberExists(mid)) {
+          halt(404, "{\"error\": \"member not found\"}");
+        }
+
+        return gson.toJson(guild.member(mid));
+      });
+
+      exception(NumberFormatException.class, (e, req, res) -> {
+        halt(400, "{\"error\": \"unable to parse id as number\"}");
       });
     });
   }
