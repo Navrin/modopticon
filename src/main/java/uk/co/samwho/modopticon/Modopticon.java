@@ -7,6 +7,7 @@ import javax.inject.Singleton;
 import dagger.Component;
 import net.dv8tion.jda.core.JDA;
 import uk.co.samwho.modopticon.annotations.Init;
+import uk.co.samwho.modopticon.api.v1.Server;
 import uk.co.samwho.modopticon.modules.ClockModule;
 import uk.co.samwho.modopticon.modules.ConfigModule;
 import uk.co.samwho.modopticon.modules.GsonModule;
@@ -23,7 +24,7 @@ import uk.co.samwho.modopticon.modules.ListenerModule;
 })
 interface Modopticon {
   Backfiller backfiller();
-  JSONServer jsonServer();
+  Server apiServer();
   JDA jda();
   @Init Set<Runnable> inits();
 }

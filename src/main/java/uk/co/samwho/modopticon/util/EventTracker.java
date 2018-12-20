@@ -1,6 +1,5 @@
 package uk.co.samwho.modopticon.util;
 
-import com.google.auto.value.AutoValue;
 import com.google.common.base.Preconditions;
 
 import java.time.Clock;
@@ -21,19 +20,32 @@ import java.util.concurrent.atomic.AtomicLong;
  * {/@code}
  */
 public class EventTracker {
-    @AutoValue
-    static abstract class Event implements Comparable<Event> {
-        abstract Instant time();
-        abstract int count();
+    static class Event implements Comparable<Event> {
+        private final Instant time;
+        private final int count;
+
+        private Event(Instant time, int count) {
+            this.time = time;
+            this.count = count;
+        }
 
         static Event create(Instant time, int count) {
-            return new AutoValue_EventTracker_Event(time, count);
+            return new Event(time, count);
         }
 
         @Override
         public int compareTo(Event o) {
             return time().compareTo(o.time());
         }
+
+        public Instant time() {
+            return time;
+        };
+
+        public int count() {
+            return count;
+        };
+
     }
 
     private final Clock clock;

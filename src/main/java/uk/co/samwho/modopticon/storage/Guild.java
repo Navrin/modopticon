@@ -23,8 +23,12 @@ public final class Guild {
     this.members = Collections.synchronizedMap(new HashMap<>());
   }
 
-  public Channel channel(Long id) {
+  public Channel channel(long id) {
     return channels.computeIfAbsent(id, k -> new Channel(id));
+  }
+
+  public boolean channelExists(long id) {
+    return channels.containsKey(id);
   }
 
   public Collection<Channel> channels() {
@@ -33,6 +37,10 @@ public final class Guild {
 
   public Member member(Long id) {
     return members.computeIfAbsent(id, k -> new Member(id));
+  }
+
+  public boolean memberExists(long id) {
+    return members.containsKey(id);
   }
 
   public Collection<Member> members() {

@@ -8,6 +8,6 @@ public class Main {
 
         modopticon.jda().awaitReady();
         modopticon.backfiller().run();
-        modopticon.jsonServer().run();
+        modopticon.apiServer().run();
     }
 }

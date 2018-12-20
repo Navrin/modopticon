@@ -22,6 +22,7 @@ public final class GsonModule {
     @Singleton
     static Gson gson() {
       GsonBuilder builder = new GsonBuilder();
+      builder.setPrettyPrinting();
 
       builder.registerTypeAdapter(OffsetDateTime.class, new JsonSerializer<OffsetDateTime>() {
         @Override

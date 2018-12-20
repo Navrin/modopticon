@@ -24,16 +24,24 @@ public final class Storage {
   @Inject
   Storage() {}
 
-  public User user(Long id) {
+  public User user(long id) {
     return users.computeIfAbsent(id, k -> new User(id));
+  }
+
+  public boolean userExists(long id) {
+    return users.containsKey(id);
   }
 
   public Collection<User> users() {
     return users.values();
   }
 
-  public Guild guild(Long id) {
+  public Guild guild(long id) {
     return guilds.computeIfAbsent(id, k -> new Guild(id));
+  }
+
+  public boolean guildExists(long id) {
+    return guilds.containsKey(id);
   }
 
   public Collection<Guild> guilds() {
