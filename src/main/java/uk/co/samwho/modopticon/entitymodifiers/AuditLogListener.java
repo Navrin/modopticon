@@ -1,10 +1,13 @@
-package uk.co.samwho.modopticon.listeners;
+package uk.co.samwho.modopticon.entitymodifiers;
 
 import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.flogger.FluentLogger;
+
+import graphql.Scalars;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -14,13 +17,13 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.events.guild.GuildBanEvent;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildReadyEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import uk.co.samwho.modopticon.storage.Guilds;
 import uk.co.samwho.modopticon.storage.Members;
 import uk.co.samwho.modopticon.storage.Storage;
+import uk.co.samwho.modopticon.storage.User;
 
 @Singleton
-public final class AuditLogListener extends ListenerAdapter {
+public final class AuditLogListener extends EntityModifier {
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
   private static final String BAN = "lastBan";
@@ -33,6 +36,9 @@ public final class AuditLogListener extends ListenerAdapter {
   public AuditLogListener(Storage storage, Clock clock) {
     this.storage = storage;
     this.clock = clock;
+
+    extend(User.class, BAN, Scalars.GraphQLString);
+    extend(User.class, KICK, Scalars.GraphQLString);
   }
 
   @Override

@@ -1,4 +1,4 @@
-package uk.co.samwho.modopticon.listeners;
+package uk.co.samwho.modopticon.entitymodifiers;
 
 import java.time.OffsetDateTime;
 import java.util.Collections;
@@ -11,19 +11,23 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import com.google.common.flogger.FluentLogger;
+
+import graphql.Scalars;
+import graphql.schema.GraphQLList;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import uk.co.samwho.modopticon.storage.Channel;
 import uk.co.samwho.modopticon.storage.Channels;
 import uk.co.samwho.modopticon.storage.Guilds;
 import uk.co.samwho.modopticon.storage.Storage;
 import uk.co.samwho.modopticon.storage.Users;
 
 @Singleton
-public final class RecentChattersListener extends ListenerAdapter {
+public final class RecentChattersListener extends EntityModifier {
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
   private static final String KEY = "recentChatters";
@@ -36,6 +40,8 @@ public final class RecentChattersListener extends ListenerAdapter {
   public RecentChattersListener(Storage storage) {
     this.storage = storage;
     this.channels = Collections.synchronizedMap(new HashMap<>());
+
+    extend(Channel.class, KEY, new GraphQLList(Scalars.GraphQLLong));
   }
 
   @Override

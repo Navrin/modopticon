@@ -1,22 +1,22 @@
-package uk.co.samwho.modopticon.listeners;
+package uk.co.samwho.modopticon.entitymodifiers;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import graphql.Scalars;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberNickChangeEvent;
 import net.dv8tion.jda.core.events.user.update.UserUpdateNameEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import uk.co.samwho.modopticon.storage.Guilds;
 import uk.co.samwho.modopticon.storage.Members;
 import uk.co.samwho.modopticon.storage.Storage;
 import uk.co.samwho.modopticon.storage.Users;
 
 @Singleton
-public final class NicknameListener extends ListenerAdapter {
+public final class NicknameListener extends EntityModifier {
   private static final String NAME = "name";
   private static final String NICKNAME = "nickname";
 
@@ -25,6 +25,9 @@ public final class NicknameListener extends ListenerAdapter {
   @Inject
   public NicknameListener(Storage storage) {
     this.storage = storage;
+
+    extend(uk.co.samwho.modopticon.storage.User.class, NAME, Scalars.GraphQLString);
+    extend(uk.co.samwho.modopticon.storage.Member.class, NICKNAME, Scalars.GraphQLString);
   }
 
   @Override

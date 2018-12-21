@@ -2,15 +2,16 @@ package uk.co.samwho.modopticon.api.v1;
 
 import static spark.Spark.*;
 
-import java.util.Optional;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
+import graphql.ExecutionResult;
+import uk.co.samwho.modopticon.api.v1.graphql.Executor;
 import uk.co.samwho.modopticon.api.v1.websocket.WebSocketServer;
-import uk.co.samwho.modopticon.storage.Entity;
 import uk.co.samwho.modopticon.storage.Guild;
 import uk.co.samwho.modopticon.storage.Storage;
 
@@ -19,12 +20,14 @@ public final class Server implements Runnable {
   private final Storage storage;
   private final Gson gson;
   private final WebSocketServer webSocketServer;
+  private final Executor graphQLExecutor;
 
   @Inject
-  public Server(Storage storage, Gson gson, WebSocketServer webSocketServer) {
+  public Server(Storage storage, Gson gson, WebSocketServer webSocketServer, Executor graphQLExecutor) {
     this.storage = storage;
     this.gson = gson;
     this.webSocketServer = webSocketServer;
+    this.graphQLExecutor = graphQLExecutor;
   }
 
   @Override
@@ -36,6 +39,21 @@ public final class Server implements Runnable {
     webSocket("/api/v1/websocket", webSocketServer);
 
     port(8080);
+
+    get("/api/v1/graphql", (req, res) -> {
+      String query = req.queryParams("q");
+      if (Strings.isNullOrEmpty(query)) {
+        halt(400, "{\"error\":\"no query specified\"}");
+      }
+
+      ExecutionResult result = graphQLExecutor.execute(query);
+
+      if (!result.getErrors().isEmpty()) {
+        halt(400, "{\"error\":\" " + Joiner.on(", ").join(result.getErrors()) + "\"}");
+      }
+
+      return gson.toJson(result.toSpecification().get("data"));
+    });
 
     path("/api/v1/rest", () -> {
       before("/*", (req, res) -> {

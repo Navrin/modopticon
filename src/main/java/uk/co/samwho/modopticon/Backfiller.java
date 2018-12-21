@@ -18,10 +18,10 @@ public final class Backfiller implements Runnable {
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
   private final JDA jda;
-  private final Set<ListenerAdapter> listeners;
+  private final Set<? extends ListenerAdapter> listeners;
 
   @Inject
-  public Backfiller(JDA jda, Set<ListenerAdapter> listeners) {
+  public Backfiller(JDA jda, Set<? extends ListenerAdapter> listeners) {
     this.jda = jda;
     this.listeners = listeners;
   }

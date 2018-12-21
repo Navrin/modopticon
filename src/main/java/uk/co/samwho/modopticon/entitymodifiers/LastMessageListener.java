@@ -1,19 +1,19 @@
-package uk.co.samwho.modopticon.listeners;
+package uk.co.samwho.modopticon.entitymodifiers;
 
 import java.time.OffsetDateTime;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import graphql.Scalars;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import uk.co.samwho.modopticon.storage.Channel;
 import uk.co.samwho.modopticon.storage.Channels;
 import uk.co.samwho.modopticon.storage.Guilds;
 import uk.co.samwho.modopticon.storage.Storage;
 
 @Singleton
-public final class LastMessageListener extends ListenerAdapter {
+public final class LastMessageListener extends EntityModifier {
   private static final String KEY = "lastMessageReceivedAt";
 
   private final Storage storage;
@@ -21,6 +21,8 @@ public final class LastMessageListener extends ListenerAdapter {
   @Inject
   public LastMessageListener(Storage storage) {
     this.storage = storage;
+
+    extend(Channel.class, KEY, Scalars.GraphQLString);
   }
 
   @Override

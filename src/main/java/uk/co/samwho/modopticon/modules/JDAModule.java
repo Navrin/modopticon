@@ -18,7 +18,7 @@ import java.util.Set;
 public class JDAModule {
     @Provides
     @Singleton
-    static JDA jda(@Named("token") String token, Set<ListenerAdapter> listeners) {
+    static JDA jda(@Named("token") String token, Set<? extends ListenerAdapter> listeners) {
         try {
             JDABuilder builder = new JDABuilder(AccountType.BOT);
             builder.setToken(token);

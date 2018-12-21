@@ -12,7 +12,7 @@ import uk.co.samwho.modopticon.modules.ClockModule;
 import uk.co.samwho.modopticon.modules.ConfigModule;
 import uk.co.samwho.modopticon.modules.GsonModule;
 import uk.co.samwho.modopticon.modules.JDAModule;
-import uk.co.samwho.modopticon.modules.ListenerModule;
+import uk.co.samwho.modopticon.modules.EntityModifierModule;
 
 @Singleton
 @Component(modules = {
@@ -20,7 +20,7 @@ import uk.co.samwho.modopticon.modules.ListenerModule;
   ConfigModule.class,
   GsonModule.class,
   JDAModule.class,
-  ListenerModule.class
+  EntityModifierModule.class
 })
 interface Modopticon {
   Backfiller backfiller();
