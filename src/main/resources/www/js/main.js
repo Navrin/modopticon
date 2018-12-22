@@ -15,12 +15,11 @@ function main() {
   ws.onmessage = onSocketMessage;
   ws.onopen = function() {
     fetch("/api/v1/graphql?q=query{guilds{id,channels{id}}}")
-      .then(res => {
-        res.json().then(json => {
-          json.guilds.forEach((guild, idx) => {
-            guild.channels.forEach((channel, cidx) => {
-              ws.send("subscribe " + channel.id);
-            });
+      .then(res => res.json())
+      .then(json => {
+        json.guilds.forEach((guild, idx) => {
+          guild.channels.forEach((channel, cidx) => {
+            ws.send("subscribe " + channel.id);
           });
         });
       });
@@ -40,14 +39,61 @@ function onSocketMessage(message) {
   }
 }
 
+var numChannels = 0;
+var currentRow = null;
+
 function updateEntity(entity) {
-  var element = document.getElementById(entity.id);
-  if (element === undefined || element === null) {
-    element = document.createElement("pre")
-    element.id = entity.id;
-    document.body.appendChild(element);
+  var col = document.getElementById(entity.id);
+  if (col === undefined || col === null) {
+    if (numChannels % 3 == 0 || currentRow == null) {
+      currentRow = document.createElement("div")
+      currentRow.className = "row";
+      document.getElementById("main").appendChild(currentRow);
+    }
+    numChannels += 1;
+
+    col = document.createElement("div")
+    col.className = "col s4";
+    col.id = entity.id;
+    currentRow.appendChild(col);
   }
-  element.innerHTML = JSON.stringify(entity, null, 2);
+
+  var cardColor = "grey lighten-5";
+  var textColor = "grey-text darken-4";
+  if (entity.attributes.lastMessageReceivedAt !== undefined) {
+    let date = Date.parse(entity.attributes.lastMessageReceivedAt);
+    let secondsAgo = (new Date().getTime() - date) / 1000;
+
+    if (secondsAgo < 60) {
+      cardColor = "red darken-1";
+      textColor = "white-text";
+    } else if (secondsAgo < 60 * 5) {
+      cardColor = "orange darken-2";
+      textColor = "white-text";
+    } else if (secondsAgo < 60 * 30) {
+      cardColor = "orange lighten-4";
+    }
+  }
+
+  card = document.createElement("div")
+  card.className = "card " + cardColor;
+
+  content = document.createElement("div");
+  content.className = "card-content " + textColor;
+  content.id = entity.id;
+
+  title = document.createElement("span");
+  title.className = "card-title";
+  title.innerHTML = "#" + entity.attributes.name;
+
+  body = document.createElement("p");
+  body.innerHTML += entity.attributes.lastMessageReceivedAt;
+
+  col.children = [];
+  col.appendChild(card);
+  card.appendChild(content);
+  content.appendChild(title);
+  content.appendChild(body);
 }
 
 window.onload = main;
