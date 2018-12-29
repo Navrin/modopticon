@@ -9,12 +9,9 @@ services:
       VIRTUAL_PORT: 8080
       LETSENCRYPT_HOST: modopticon.samwho.co.uk
       LETSENCRYPT_EMAIL: samwho@lbak.co.uk
-      LETSENCRYPT_TEST: "true"
 
   nginx-proxy:
     image: jwilder/nginx-proxy
-    environment:
-      HSTS: "off"
     ports:
       - "80:80"
       - "443:443"

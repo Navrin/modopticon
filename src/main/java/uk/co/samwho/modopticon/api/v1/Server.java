@@ -40,9 +40,14 @@ public final class Server implements Runnable {
 
     port(8080);
 
-    //staticFiles.location("/www");
+    staticFiles.location("/www");
     // TODO(samwho): add in some dev environment flag to toggle this
-    staticFiles.externalLocation("/home/sam/code/java/modopticon/src/main/resources/www");
+    //staticFiles.externalLocation("/home/sam/code/java/modopticon/src/main/resources/www");
+
+    after((req, res) -> {
+      res.header("Content-Encoding", "gzip");
+      res.header("Content-Type", "application/json");
+    });
 
     get("/api/v1/graphql", (req, res) -> {
       String query = req.queryParams("q");
