@@ -1,5 +1,6 @@
 package uk.co.samwho.modopticon.api.v1.websocket;
 
+import java.beans.PropertyChangeEvent;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -11,6 +12,11 @@ public final class Message {
   public static Message update(Entity entity) {
     return new Message(Type.ENTITY_UPDATE, entity);
   }
+
+  public static Message update(PropertyChangeEvent pce) {
+    return new Message(Type.ENTITY_PARTIAL_UPDATE, EntitySingleKeyChange.from(pce));
+  }
+
 
   public static Message subscribed(Entity entity) {
     return new Message(Type.SUBSCRIBED, entity);
@@ -48,9 +54,10 @@ public final class Message {
     SUBSCRIBED,
     UNSUBSCRIBED,
     ENTITY_UPDATE,
-    ERROR,
+    ENTITY_PARTIAL_UPDATE,
     SUBSCRIPTIONS,
     AUTHENTICATED,
+    ERROR,
     ENTITY_NOT_FOUND,
     INVALID_RESOURCE_IDENTIFIER
   }

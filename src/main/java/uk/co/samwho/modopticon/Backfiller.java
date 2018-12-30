@@ -28,7 +28,7 @@ public final class Backfiller implements Runnable {
 
   @Override
   public void run() {
-    logger.atInfo().log("starting backfill...");
+    logger.atInfo().log("starting backfill");
     jda.getGuilds().stream().parallel().forEach(guild -> {
       logger.atInfo().log("backfilling channel data for guild %s", guild.getName());
 
@@ -47,5 +47,6 @@ public final class Backfiller implements Runnable {
         });
       });
     });
+    logger.atInfo().log("backfill finished");
   }
 }

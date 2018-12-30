@@ -1,5 +1,7 @@
 package uk.co.samwho.modopticon.api.v1.websocket;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -16,7 +18,7 @@ import org.eclipse.jetty.websocket.api.Session;
 
 import uk.co.samwho.modopticon.storage.Entity;
 
-public final class EntityObserver implements Observer, Closeable {
+public final class EntityObserver implements PropertyChangeListener, Closeable {
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
   private final Gson gson;
@@ -41,27 +43,17 @@ public final class EntityObserver implements Observer, Closeable {
   }
 
   @Override
-  public void update(Observable o, Object args) {
-    logger.atInfo().log("update called for: %s", o.toString());
-
-    if (!session.isOpen()) {
-      return;
-    }
-
-    try {
-      session.getRemote().sendString(gson.toJson(Message.update((Entity)o)));
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
+  public void propertyChange(PropertyChangeEvent pce) {
+    send(session, Message.update(pce));
   }
 
   public synchronized void observe(Entity o) {
-    o.addObserver(this);
+    o.addPropertyChangeListener(this);
     observing.add(o);
   }
 
   public synchronized void stopObserving(Entity o) {
-    o.deleteObserver(this);
+    o.removePropertyChangeListener(this);
     observing.remove(o);
   }
 
@@ -71,9 +63,22 @@ public final class EntityObserver implements Observer, Closeable {
 
   @Override
   public void close() throws IOException {
-    observing.forEach(o -> o.deleteObserver(this));
+    observing.forEach(o -> o.removePropertyChangeListener(this));
     if (session.isOpen()) {
       session.close();
+    }
+  }
+
+  private void send(Session session, Message message) {
+    if (!session.isOpen()) {
+      logger.atWarning().log("attempted to send to closed session");
+      return;
+    }
+
+    try {
+      session.getRemote().sendString(gson.toJson(message));
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
     }
   }
 }

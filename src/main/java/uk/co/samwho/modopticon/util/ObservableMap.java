@@ -1,25 +1,36 @@
 package uk.co.samwho.modopticon.util;
 
-import java.util.AbstractMap;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Observable;
 import java.util.Set;
 
 import com.google.common.flogger.FluentLogger;
 
-public final class ObservableMap<K, V> extends Observable implements Map<K, V> {
+public final class ObservableMap<K, V> implements Map<K, V> {
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+
 
   public static <K, V> ObservableMap<K, V> wrap(Map<K, V> map) {
     return new ObservableMap<>(map);
   }
 
   private final Map<K, V> map;
+  private final PropertyChangeSupport pcs;
 
   private ObservableMap(Map<K, V> map) {
     this.map = map;
+    this.pcs = new PropertyChangeSupport(this);
+  }
+
+  public void addPropertyChangeListener(PropertyChangeListener pcl) {
+    pcs.addPropertyChangeListener(pcl);
+  }
+
+  public void removePropertyChangeListener(PropertyChangeListener pcl) {
+    pcs.removePropertyChangeListener(pcl);
   }
 
   public int size() {
@@ -46,9 +57,7 @@ public final class ObservableMap<K, V> extends Observable implements Map<K, V> {
     V prev = map.put(key, value);
 
     if (!Objects.equals(prev, value)) {
-      logger.atFine().log("triggering map change from put(): %s", map.toString());
-      this.setChanged();
-      this.notifyObservers(new AbstractMap.SimpleEntry<K,V>(key, value));
+      pcs.firePropertyChange(key.toString(), prev, value);
     }
 
     return prev;
@@ -58,26 +67,18 @@ public final class ObservableMap<K, V> extends Observable implements Map<K, V> {
     V prev = map.remove(key);
 
     if (prev != null) {
-      logger.atFine().log("triggering map change from remove(): %s", map.toString());
-      this.setChanged();
-      this.notifyObservers(map);
+      pcs.firePropertyChange(key.toString(), prev, null);
     }
 
     return prev;
   }
 
-  public void putAll(Map<? extends K, ? extends V> m) {
-    map.putAll(m);
-    logger.atFine().log("triggering map change from putAll(): %s", map.toString());
-    this.setChanged();
-    this.notifyObservers(map);
+  public synchronized void putAll(Map<? extends K, ? extends V> m) {
+    m.forEach(map::put);
   }
 
-  public void clear() {
-    map.clear();
-    logger.atFine().log("triggering map change from clear(): %s", map.toString());
-    this.setChanged();
-    this.notifyObservers(map);
+  public synchronized void clear() {
+    map.keySet().forEach(map::remove);
   }
 
   public Set<K> keySet() {
