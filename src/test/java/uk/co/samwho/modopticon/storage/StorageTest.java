@@ -11,7 +11,7 @@ public final class StorageTest {
   private final Storage storage = new Storage();
 
   @Test
-  public void testGuild() {
+  public void testGuild() throws Exception {
     assertThat(storage.guildExists(1)).isFalse();
     assertThat(storage.guild(1)).isNotNull();
     assertThat(storage.guild(1)).isEqualTo(storage.guild(1));
@@ -23,7 +23,7 @@ public final class StorageTest {
   }
 
   @Test
-  public void testUser() {
+  public void testUser() throws Exception {
     assertThat(storage.userExists(1)).isFalse();
     assertThat(storage.user(1)).isNotNull();
     assertThat(storage.user(1)).isEqualTo(storage.user(1));
@@ -35,7 +35,7 @@ public final class StorageTest {
   }
 
   @Test
-  public void testGuildMember() {
+  public void testGuildMember() throws Exception {
     assertThat(storage.guild(1).memberExists(2)).isFalse();
     assertThat(storage.guild(1).member(2)).isNotNull();
     assertThat(storage.guild(1).member(2)).isEqualTo(storage.guild(1).member(2));
@@ -47,7 +47,7 @@ public final class StorageTest {
   }
 
   @Test
-  public void testGuildChannel() {
+  public void testGuildChannel() throws Exception {
     assertThat(storage.guild(1).channelExists(3)).isFalse();
     assertThat(storage.guild(1).channel(3)).isNotNull();
     assertThat(storage.guild(1).channel(3)).isEqualTo(storage.guild(1).channel(3));

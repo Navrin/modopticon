@@ -29,14 +29,15 @@ public final class Backfiller implements Runnable {
   @Override
   public void run() {
     logger.atInfo().log("starting backfill...");
-    jda.getGuilds().forEach(guild -> {
-      guild.getTextChannels().forEach(channel -> {
+    jda.getGuilds().stream().parallel().forEach(guild -> {
+      logger.atInfo().log("backfilling channel data for guild %s", guild.getName());
+
+      guild.getTextChannels().stream().parallel().forEach(channel -> {
         if (!guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_HISTORY)) {
           return;
         }
 
-        logger.atInfo().log("backfilling channel #%s in guild %s", channel.getName(), guild.getName());
-        channel.getIterableHistory().limit(50).cache(false).stream().limit(50).forEach(message -> {
+        channel.getIterableHistory().limit(100).cache(false).stream().limit(100).forEach(message -> {
           if (Users.isDeleted(message)) {
             return;
           }

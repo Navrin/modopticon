@@ -12,6 +12,7 @@ import uk.co.samwho.modopticon.modules.ClockModule;
 import uk.co.samwho.modopticon.modules.ConfigModule;
 import uk.co.samwho.modopticon.modules.GsonModule;
 import uk.co.samwho.modopticon.modules.JDAModule;
+import uk.co.samwho.modopticon.modules.WebSocketHandlersModule;
 import uk.co.samwho.modopticon.modules.EntityModifierModule;
 
 @Singleton
@@ -20,6 +21,7 @@ import uk.co.samwho.modopticon.modules.EntityModifierModule;
   ConfigModule.class,
   GsonModule.class,
   JDAModule.class,
+  WebSocketHandlersModule.class,
   EntityModifierModule.class
 })
 interface Modopticon {

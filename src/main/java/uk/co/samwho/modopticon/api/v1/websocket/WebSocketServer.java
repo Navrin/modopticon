@@ -1,17 +1,9 @@
 package uk.co.samwho.modopticon.api.v1.websocket;
 
-import java.io.Closeable;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.time.Duration;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.concurrent.ThreadSafe;
@@ -19,6 +11,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.google.common.base.CharMatcher;
+import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.flogger.FluentLogger;
@@ -30,15 +23,17 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
-import uk.co.samwho.modopticon.storage.Entity;
-import uk.co.samwho.modopticon.storage.Storage;
+import uk.co.samwho.modopticon.api.v1.websocket.handlers.Authenticate;
+import uk.co.samwho.modopticon.api.v1.websocket.handlers.MessageHandler;
 
 @WebSocket
 @Singleton
 @ThreadSafe
 public final class WebSocketServer {
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+
   private static final Duration SOCKET_IDLE_TIMEOUT = Duration.ofMinutes(15);
+  private static final Joiner WHITESPACE_JOINER = Joiner.on(' ');
   private static final Splitter WHITESPACE_SPLITTER =
       Splitter
         .on(CharMatcher.whitespace())
@@ -46,14 +41,14 @@ public final class WebSocketServer {
         .omitEmptyStrings();
 
   private final Gson gson;
-  private final Storage storage;
   private final Map<Session, EntityObserver> observers;
+  private final Map<String, MessageHandler> handlers;
 
   @Inject
-  WebSocketServer(Gson gson, Storage storage) {
+  WebSocketServer(Gson gson, Map<String, MessageHandler> handlers) {
     this.gson = gson;
-    this.storage = storage;
     this.observers = new ConcurrentHashMap<>();
+    this.handlers = handlers;
   }
 
   @OnWebSocketConnect
@@ -80,89 +75,39 @@ public final class WebSocketServer {
   @OnWebSocketMessage
   public void message(Session session, String message) throws IOException {
     if (Strings.isNullOrEmpty(message)) {
+      send(session, Message.error("received empty message from you"));
       return;
     }
 
     List<String> parts = WHITESPACE_SPLITTER.splitToList(message);
-
     if (parts.isEmpty()) {
+      send(session, Message.error("received empty message from you"));
       return;
     }
 
-    if (!session.isOpen()) {
-      return;
-    }
-
-    switch (parts.get(0)) {
-    case "subscribe":
-      subscribe(session, parts.get(1));
-      break;
-    case "unsubscribe":
-      unsubscribe(session, parts.get(1));
-      break;
-    case "subscriptions":
-      if (parts.size() > 1) {
-        send(session, Message.error("subscriptons command takes no args"));
-        break;
-      }
-      subscriptions(session);
-      break;
-    default:
-      send(session, Message.error("unknwon command: " + parts.get(0)));
-      break;
-    }
-  }
-
-  private void subscribe(Session session, String resourceIdentifier) throws IOException {
-    Optional<Entity> entity;
-    try {
-      entity = storage.fromResourceIdentifier(resourceIdentifier);
-    } catch (Exception e) {
-      send(session, Message.error(e.getMessage()));
-      return;
-    }
-
-    if (!entity.isPresent()) {
-      send(session, Message.error("could not find resource with identifier " + resourceIdentifier));
+    MessageHandler handler = handlers.get(parts.get(0));
+    if (handler == null) {
+      send(session, Message.error("unrecognised command: " + parts.get(0)));
       return;
     }
 
     EntityObserver eo = observers.computeIfAbsent(session, k -> new EntityObserver(gson, k));
-    eo.observe(entity.get());
+    if (!eo.isAuthenticated() && handler.getClass() != Authenticate.class) {
+      send(session, Message.notAuthenticated());
+      return;
+    }
 
-    send(session, Message.subscribed(entity.get()));
-  }
-
-  private void unsubscribe(Session session, String resourceIdentifier) throws IOException {
-    Optional<Entity> entity;
     try {
-      entity = storage.fromResourceIdentifier(resourceIdentifier);
-    } catch (Exception e) {
-      send(session, Message.error(e.getMessage()));
-      return;
+      send(session, handler.handle(eo, parts));
+    } catch(Exception e) {
+      logger.atSevere().withCause(e).log("exception while processing message: " + WHITESPACE_JOINER.join(parts));
+      send(session, Message.error("internal server error"));
     }
-
-    if (!entity.isPresent()) {
-      send(session, Message.error("could not find resource with identifier " + resourceIdentifier));
-      return;
-    }
-
-    EntityObserver eo = observers.computeIfAbsent(session, k -> new EntityObserver(gson, k));
-    eo.stopObserving(entity.get());
-
-    send(session, Message.unsubscribed(entity.get()));
-  }
-
-  private void subscriptions(Session session) throws IOException {
-    if (!session.isOpen()) {
-      return;
-    }
-
-    send(session, Message.subscriptions(observers.get(session).observing()));
   }
 
   private void send(Session session, Message message) throws IOException {
     if (!session.isOpen()) {
+      logger.atWarning().log("attempted to send to closed session");
       return;
     }
 

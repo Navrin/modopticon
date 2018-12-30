@@ -23,10 +23,21 @@ public final class EntityObserver implements Observer, Closeable {
   private final Session session;
   private final Set<Entity> observing;
 
+  private volatile boolean authenticated;
+
   EntityObserver(Gson gson, Session session) {
     this.gson = gson;
     this.session = session;
     this.observing = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    this.authenticated = false;
+  }
+
+  public void authenticate() {
+    this.authenticated = true;
+  }
+
+  public boolean isAuthenticated() {
+    return authenticated;
   }
 
   @Override

@@ -1,6 +1,7 @@
 .idea/
 target/
 src/main/resources/token.txt
+src/main/resources/api_keys.json
 .settings/
 .factorypath
 .classpath

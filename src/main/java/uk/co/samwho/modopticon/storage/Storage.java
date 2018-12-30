@@ -55,7 +55,7 @@ public final class Storage {
     return guilds.values();
   }
 
-  public Optional<Entity> fromResourceIdentifier(String resourceIdentifier) {
+  public Optional<Entity> fromResourceIdentifier(String resourceIdentifier) throws InvalidResourceIdentifierException {
     if (Strings.isNullOrEmpty(resourceIdentifier)) {
       return Optional.empty();
     }
@@ -68,7 +68,7 @@ public final class Storage {
     }
 
     if (parts.size() % 2 != 0) {
-      throw new IllegalArgumentException("invalid resource identifier: " + resourceIdentifier);
+      throw new InvalidResourceIdentifierException(resourceIdentifier);
     }
 
     switch(parts.get(0)) {
@@ -121,6 +121,6 @@ public final class Storage {
         }
     }
 
-    throw new IllegalArgumentException("invalid resource identifier: " + resourceIdentifier);
+    throw new InvalidResourceIdentifierException(resourceIdentifier);
   }
 }

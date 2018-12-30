@@ -54,6 +54,13 @@ public final class ConfigModule {
         return resourceStringStream("bad_words.txt");
     }
 
+    @Provides
+    @Singleton
+    @Named("api_keys.json")
+    static InputStream apiKeys() {
+        return resourceInputStream("api_keys.json");
+    }
+
     private static String resource(String path) {
         return resourceStringStream(path).collect(Collectors.joining());
     }
