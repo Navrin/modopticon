@@ -3,8 +3,6 @@ package uk.co.samwho.modopticon.api.v1.graphql;
 import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLSchema;
-import graphql.schema.idl.RuntimeWiring;
-import graphql.schema.idl.SchemaGenerator;
 import uk.co.samwho.modopticon.storage.Entity;
 import uk.co.samwho.modopticon.storage.Guild;
 import uk.co.samwho.modopticon.storage.User;

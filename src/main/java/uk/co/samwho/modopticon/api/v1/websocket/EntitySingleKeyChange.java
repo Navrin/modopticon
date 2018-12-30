@@ -2,7 +2,6 @@ package uk.co.samwho.modopticon.api.v1.websocket;
 
 import java.beans.PropertyChangeEvent;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gson.annotations.Expose;
