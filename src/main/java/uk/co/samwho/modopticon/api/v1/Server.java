@@ -51,25 +51,28 @@ public final class Server implements Runnable {
     // TODO(samwho): add in some dev environment flag to toggle this
     // staticFiles.externalLocation("/home/sam/code/java/modopticon/src/main/resources/www");
 
+    options("/*", (req, res) -> {
+      String headers = req.headers("Access-Control-Request-Headers");
+      if (headers != null) {
+        res.header("Access-Control-Allow-Headers", headers);
+      }
+
+      String method = req.headers("Access-Control-Request-Method");
+      if (method != null) {
+        res.header("Access-Control-Allow-Methods", method);
+      }
+
+      return "OK";
+    });
+
+    before("/*", (req, res) -> {
+      res.header("Content-Encoding", "gzip");
+      res.header("Content-Type", "application/json");
+      res.header("Access-Control-Allow-Origin", "*");
+    });
+
     path("/api/v1", () -> {
-      before("/*", (req, res) -> {
-        if (req.pathInfo().equals("/api/v1/websocket")) {
-          return;
-        }
-
-        res.header("Content-Encoding", "gzip");
-        res.header("Content-Type", "application/json");
-
-        String apiKey = req.headers("X-Modopticon-Apikey");
-
-        if (Strings.isNullOrEmpty(apiKey)) {
-          halt(403, "{\"error\":\"no api key found, please add it in the X-Modopticon-Apikey header\"}");
-        }
-
-        if (!apiKeyAuth.isValid(apiKey)) {
-          halt(403, "{\"error\":\"invalid api key\"}");
-        }
-      });
+      before("/*", apiKeyAuth.filter());
 
       get("/graphql", (req, res) -> {
         String query = req.queryParams("q");
@@ -189,6 +192,10 @@ public final class Server implements Runnable {
           halt(400, "{\"error\": \"unable to parse id as number\"}");
         });
       });
+    });
+
+    after((req, res) -> {
+      logger.atInfo().log("%s %s %d", req.requestMethod(), req.pathInfo(), res.status());
     });
   }
 }

@@ -14,11 +14,13 @@ public final class EntitySingleKeyChange {
   }
 
   @Expose private final String id;
+  @Expose private final String type;
   @Expose private final Map<String, Object> attributes;
 
   private EntitySingleKeyChange(PropertyChangeEvent pce) {
     Entity orig = (Entity)pce.getSource();
     this.id = orig.id();
+    this.type = orig.type();
     this.attributes = Collections.singletonMap(pce.getPropertyName(), pce.getNewValue());
   }
 }

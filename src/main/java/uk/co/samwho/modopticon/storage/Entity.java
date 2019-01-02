@@ -44,6 +44,11 @@ public abstract class Entity {
     return this.id;
   }
 
+  public final String type() {
+    return this.type;
+  }
+
+
   public final Map<String, Object> attributes() {
     return this.attributes;
   }
