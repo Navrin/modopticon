@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import uk.co.samwho.modopticon.storage.Channel;
 import uk.co.samwho.modopticon.storage.Channels;
 import uk.co.samwho.modopticon.storage.Guilds;
+import uk.co.samwho.modopticon.storage.Members;
 import uk.co.samwho.modopticon.storage.Storage;
 import uk.co.samwho.modopticon.storage.Users;
 
@@ -41,7 +42,7 @@ public final class RecentChattersListener extends EntityModifier {
     this.storage = storage;
     this.channels = Collections.synchronizedMap(new HashMap<>());
 
-    extend(Channel.class, KEY, new GraphQLList(Scalars.GraphQLLong));
+    extend(Channel.class, KEY, new GraphQLList(Scalars.GraphQLString));
   }
 
   @Override
@@ -52,7 +53,12 @@ public final class RecentChattersListener extends EntityModifier {
       .guild(Guilds.id(event))
       .channel(Channels.id(event))
       .attributes()
-      .put(KEY, set.stream().map(i -> Users.id(i.member())).collect(Collectors.toList()));
+      .put(KEY,
+        set
+          .stream()
+          .map(i -> storage.guild(Guilds.id(i.member())).member(Members.id(i.member())).id())
+          .collect(Collectors.toList())
+      );
   }
 
   private final SortedSet<MemberWithTime> updateChatters(GuildMessageReceivedEvent event) {

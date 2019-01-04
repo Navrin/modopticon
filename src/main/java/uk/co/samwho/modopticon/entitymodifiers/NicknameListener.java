@@ -51,6 +51,8 @@ public final class NicknameListener extends EntityModifier {
   }
 
   private void processMember(Member member) {
+    processUser(member.getUser());
+
     if (Users.isDeleted(member) || member.getNickname() == null) {
       return;
     }
@@ -60,8 +62,6 @@ public final class NicknameListener extends EntityModifier {
       .member(Members.id(member))
       .attributes()
       .put(NICKNAME, member.getNickname());
-
-    processUser(member.getUser());
   }
 
   private void processUser(User user) {
