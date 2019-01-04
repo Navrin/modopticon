@@ -9,12 +9,13 @@ import dagger.Provides;
 import dagger.multibindings.IntoSet;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import uk.co.samwho.modopticon.entitymodifiers.AuditLogListener;
+import uk.co.samwho.modopticon.entitymodifiers.AvatarListener;
 import uk.co.samwho.modopticon.entitymodifiers.ChannelNameListener;
 import uk.co.samwho.modopticon.entitymodifiers.EntityModifier;
 import uk.co.samwho.modopticon.entitymodifiers.GuildNameListener;
 import uk.co.samwho.modopticon.entitymodifiers.LastMessageListener;
 import uk.co.samwho.modopticon.entitymodifiers.NicknameListener;
-import uk.co.samwho.modopticon.entitymodifiers.RecentChattersListener;
+import uk.co.samwho.modopticon.entitymodifiers.RecentMessagesListener;
 import uk.co.samwho.modopticon.entitymodifiers.SwearWordTracker;
 import uk.co.samwho.modopticon.entitymodifiers.UserJoinCreateListener;
 
@@ -44,7 +45,14 @@ public class EntityModifierModule {
     @Provides
     @Singleton
     @IntoSet
-    static EntityModifier provideRecentChattersListener(RecentChattersListener l) {
+    static EntityModifier provideRecentMessagesListener(RecentMessagesListener l) {
+        return l;
+    }
+
+    @Provides
+    @Singleton
+    @IntoSet
+    static EntityModifier provideAvatarListener(AvatarListener l) {
         return l;
     }
 
