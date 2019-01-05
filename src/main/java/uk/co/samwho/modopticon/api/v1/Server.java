@@ -10,12 +10,14 @@ import com.google.common.base.Strings;
 import com.google.common.flogger.FluentLogger;
 import com.google.gson.Gson;
 
+import com.google.gson.annotations.Expose;
 import graphql.ExecutionResult;
 import uk.co.samwho.modopticon.api.auth.ApiKeyAuth;
 import uk.co.samwho.modopticon.api.v1.graphql.Executor;
 import uk.co.samwho.modopticon.api.v1.websocket.WebSocketServer;
 import uk.co.samwho.modopticon.storage.Guild;
 import uk.co.samwho.modopticon.storage.Storage;
+
 
 @Singleton
 public final class Server implements Runnable {
@@ -35,6 +37,11 @@ public final class Server implements Runnable {
     this.webSocketServer = webSocketServer;
     this.graphQLExecutor = graphQLExecutor;
     this.apiKeyAuth = apiKeyAuth;
+  }
+
+  static final class GQLRequest {
+    @Expose
+    String query;
   }
 
   @Override
@@ -76,17 +83,16 @@ public final class Server implements Runnable {
 
       get("/graphql", (req, res) -> {
         String query = req.queryParams("q");
-        if (Strings.isNullOrEmpty(query)) {
-          halt(400, "{\"error\":\"no query specified\"}");
-        }
 
-        ExecutionResult result = graphQLExecutor.execute(query);
+        return processGQLRequest(query);
+      });
 
-        if (!result.getErrors().isEmpty()) {
-          halt(400, "{\"error\":\" " + Joiner.on(", ").join(result.getErrors()) + "\"}");
-        }
+      post("/graphql", (req, res) -> {
+        String query = req.body();
 
-        return gson.toJson(result.toSpecification().get("data"));
+        GQLRequest data = gson.fromJson(query, GQLRequest.class);
+
+        return processGQLRequest(data.query);
       });
 
       path("/rest", () -> {
@@ -197,5 +203,19 @@ public final class Server implements Runnable {
     after((req, res) -> {
       logger.atInfo().log("%s %s %d", req.requestMethod(), req.pathInfo(), res.status());
     });
+  }
+
+  private Object processGQLRequest(String query) {
+    if (Strings.isNullOrEmpty(query)) {
+      halt(400, "{\"error\":\"no query specified\"}");
+    }
+
+    ExecutionResult result = graphQLExecutor.execute(query);
+
+    if (!result.getErrors().isEmpty()) {
+      halt(400, "{\"error\":\" " + Joiner.on(", ").join(result.getErrors()) + "\"}");
+    }
+
+    return gson.toJson(result.toSpecification());
   }
 }
